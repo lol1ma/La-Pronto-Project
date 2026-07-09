@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>La Pronto — Pizza i Aalborg</title>
+  <meta name="description" content="La Pronto Pizza — familiedrevet pizzarestaurant i Aalborg siden 1993. Bestil online med levering til din dør. Åben Man–Tor 16–21:30.">
+  <meta property="og:title"       content="La Pronto Pizza — Aalborg">
+  <meta property="og:description" content="Frisk pizza leveret hurtigt. Familiedrevet siden 1993.">
+  <meta property="og:image"       content="https://la-pronto.dk/images/pizza-background.jpg">
+  <meta property="og:type"        content="restaurant">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "name": "La Pronto Pizza",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Lemvigvej 97",
+      "addressLocality": "Aalborg",
+      "postalCode": "9220",
+      "addressCountry": "DK"
+    },
+    "telephone": "+4598154640",
+    "openingHours": ["Mo-Th 16:00-21:30", "Fr-Sa 15:30-21:30", "Su 16:00-21:30"],
+    "servesCuisine": "Pizza",
+    "priceRange": "kr"
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@200;300;400;700&family=Tenor+Sans&family=Poppins:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,400&family=Pacifico&family=Nunito:wght@400;600;700&display=block" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css?v=74">
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Spring til indhold</a>
+
+<div id="top-bar-stack">
+  <!-- STATUS BAR -->
+  <div class="status-bar" id="status-bar">
+    <span class="sb-pill">
+      <span class="sb-dot"></span>
+      Åbent nu
+    </span>
+    <span class="sb-item">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      Online bestilling <span class="sb-warn">lukker 20:30</span>
+    </span>
+    <span class="sb-sep"></span>
+    <span class="sb-item">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.66A2 2 0 012 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+      Telefon <span class="sb-time">til 21:30</span>
+    </span>
+  </div>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+
+      <a class="header-brand" href="#" onclick="visSide('hjem'); return false;">
+        <img src="images/logo.svg" alt="La Pronto chef" class="header-brand-img">
+        <span class="header-brand-name">La Pronto</span>
+      </a>
+
+      <nav class="header-nav">
+        <a href="#" onclick="visSide('hjem'); return false;" data-i18n="nav_home">Hjem</a>
+        <a href="#" onclick="visSide('menu'); return false;" data-i18n="nav_menu">Menu</a>
+        <a href="#" onclick="visSide('kontakt'); return false;" data-i18n="nav_contact">Kontakt</a>
+      </nav>
+
+      <div class="header-right">
+        <a class="header-phone" href="tel:+4598154640">
+          (+45) 98 15 46 40
+        </a>
+        <a class="header-order" href="#" onclick="visSide('menu'); return false;" data-i18n="header_order">Bestil nu</a>
+        <div class="lang-switcher">
+          <button class="lang-btn active" data-lang="da" onclick="setLanguage('da')">DA</button>
+          <button class="lang-btn" data-lang="en" onclick="setLanguage('en')">EN</button>
+        </div>
+        <button class="header-cart" onclick="openCart()" aria-label="Åbn kurv">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span id="kurv-label" data-i18n="header_cart">Kurv</span>
+          <span class="cart-badge" id="kurv-badge" style="display:none;">0</span>
+        </button>
+        <button class="burger-knap" onclick="openMobileNav()" aria-label="Åbn menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+</div>
+<script>
+  (function () {
+    var stack = document.getElementById('top-bar-stack');
+    var sb = document.getElementById('status-bar');
+    if (stack) document.documentElement.style.setProperty('--topbar-h', stack.offsetHeight + 'px');
+    if (sb) document.documentElement.style.setProperty('--sb-h', sb.offsetHeight + 'px');
+  })();
+</script>
+
+<!-- Mobile nav -->
+<div class="mobil-nav" id="mobil-nav">
+  <div class="mobil-nav-overlay" onclick="closeMobileNav()"></div>
+  <div class="mobil-nav-skuffe">
+    <button class="mobil-nav-luk" onclick="closeMobileNav()" aria-label="Luk menu"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <a href="#" onclick="visSide('menu'); closeMobileNav(); return false;" style="background:#E86A47;color:white;border-radius:8px;padding:0.8rem 1rem;text-align:center;font-weight:700;text-decoration:none;display:block;margin-bottom:0.5rem;">Bestil nu →</a>
+    <a href="#" onclick="visSide('hjem'); closeMobileNav(); return false;">Hjem</a>
+    <a href="#" onclick="visSide('menu'); closeMobileNav(); return false;">Menu</a>
+    <a href="#" onclick="visSide('kontakt'); closeMobileNav(); return false;">Kontakt</a>
+    <a href="tel:98154640" style="margin-top:0.5rem;display:inline-flex;align-items:center;gap:7px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.66A2 2 0 012 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>98 15 46 40</a>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Besked øverst — ligger bevidst UDENFOR .side-wrapperne, så den altid er synlig uanset hvilken side er aktiv, og ikke kan blive fanget i en underliggende lag-kontekst -->
+<div id="notice-banner" style="display:block; background:#F7F3EF; border-bottom:1px solid #E8DFF0; border-left:4px solid #d9b152; padding:0.65rem 3rem; font-size:0.84rem; font-weight:600; color:#2E163F; position:relative; z-index:120; letter-spacing:0.01em; text-align:center;">
+    <span style="color:#d9b152; margin-right:0.5rem;">&#9679;</span><span id="notice-tekst"></span>
+    <button onclick="dismissNotice()" aria-label="Luk besked" style="position:absolute; right:0.85rem; top:50%; transform:translateY(-50%); background:none; border:none; color:#9B7EC8; cursor:pointer; line-height:1; padding:0.2rem 0.4rem; border-radius:4px; display:flex; align-items:center; justify-content:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+</div>
+
+<div id="main-content" tabindex="-1"></div>
+
+<div class="side aktiv" id="side-hjem">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg-img" id="hero-bg"></div>
+    <div class="hero-vignette"></div>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-text">
+      <div class="hero-top-line"><div class="hero-top-dot"></div></div>
+
+      <span class="hero-over" data-i18n="hero_welcome">Velkommen til</span>
+      <h1 class="hero-title" data-i18n="hero_name">La Pronto</h1>
+      <span class="hero-under" data-i18n="hero_baked">bagt med kærlighed</span>
+
+      <div class="hero-divider"><div class="hero-diamond"></div></div>
+
+      <p class="hero-sub-text" data-i18n="hero_sub">Familiedrevet pizzarestaurant i Aalborg siden 1993</p>
+
+      <div class="hero-actions">
+        <a class="btn-primær" href="#" onclick="visSide('menu'); return false;"><span data-i18n="hero_btn_order">Bestil nu</span></a>
+        <a id="btn-se-menu" class="btn-outline" href="#" onclick="visSide('menu'); return false;"><span data-i18n="hero_btn_menu">Se menuen</span></a>
+        <p class="hero-hours" id="hero-hours"></p>
+      </div>
+    </div>
+    <div class="side" id="side-kassen">
+  <div class="container" style="padding:2rem 0 4rem;">
+    <div id="kassen-lukket-banner" style="display:none; background:#fff8e1; border:1px solid #ffe082; border-radius:10px; padding:1.25rem 1.5rem; margin-bottom:1.75rem; text-align:center;">
+      <p style="font-size:1rem; font-weight:700; color:#5B1FA8; margin-bottom:0.35rem;">Webshoppen er lukket lige nu</p>
+      <p style="font-size:0.88rem; color:#555; line-height:1.6;">Webshoppen åbner for ordrer kl. <span id="kassen-lukket-wd-tid">16:00</span> mandag–torsdag, og kl. <span id="kassen-lukket-we-tid">15:30</span> fredag og lørdag.<br>Vi glæder os til at lave mad til dig!</p>
+      <p style="margin-top:0.75rem; font-size:0.88rem;">Ring til os på <a href="tel:98154640" style="color:#5B1FA8; font-weight:700;">(+45) 98 15 46 40</a></p>
+    </div>
+    <div class="kassen-header">
+      <h2>Kasse</h2>
+      <a href="#" class="kassen-tilbage" onclick="showCartPage(); return false;">← Tilbage til kurv</a>
+    </div>
+    <div class="kassen-layout">
+
+      <!-- Left: Form -->
+      <div class="kassen-venstre">
+
+        <!-- 1. Contact info -->
+        <div class="kassen-sektion">
+          <h3>1. Kontaktoplysninger</h3>
+          <div class="kassen-felt-grid">
+            <div class="kassen-felt felt--fuld">
+              <label for="ks-navn">Fulde navn *</label>
+              <input type="text" id="ks-navn" placeholder="Dit fulde navn" autocomplete="name">
+            </div>
+            <div class="kassen-felt">
+              <label for="ks-email">E-mail *</label>
+              <input type="email" id="ks-email" placeholder="din@email.dk" autocomplete="email">
+            </div>
+            <div class="kassen-felt">
+              <label for="ks-telefon">Telefon *</label>
+              <input type="tel" id="ks-telefon" placeholder="12 34 56 78" autocomplete="tel">
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Delivery method -->
+        <div class="kassen-sektion">
+          <h3>2. Leveringsmetode</h3>
+          <div class="forsendelse-valg-kassene">
+            <label class="forsendelse-option">
+              <input type="radio" name="kassen-forsendelse" value="afhentning" checked onchange="toggleLeveringForm()">
+              <span>Afhentning — <strong>Gratis</strong></span>
+              <span style="margin-left:auto;font-size:0.76rem;color:var(--gray);white-space:nowrap;">Lemvigvej 97, 9220</span>
+            </label>
+            <label class="forsendelse-option">
+              <input type="radio" name="kassen-forsendelse" value="levering" onchange="toggleLeveringForm()">
+              <span>Levering — <strong id="levering-hint">40–50 kr.</strong></span>
+            </label>
+          </div>
+          <div class="levering-adresse-form" id="levering-adresse-form" style="display:none;">
+            <div class="kassen-felt-grid">
+              <div class="kassen-felt felt--fuld">
+                <label for="ks-adresse">Gade og husnummer *</label>
+                <input type="text" id="ks-adresse" placeholder="F.eks. Boulevarden 13" autocomplete="street-address">
+              </div>
+              <div class="kassen-felt">
+                <label for="ks-postnr">Postnummer *</label>
+                <input type="text" id="ks-postnr" placeholder="9000" maxlength="4" inputmode="numeric" autocomplete="postal-code">
+              </div>
+              <div class="kassen-felt">
+                <label for="ks-etage">Etage / side <span style="font-weight:400;color:var(--gray);">(valgfrit)</span></label>
+                <input type="text" id="ks-etage" placeholder="F.eks. 2. tv. eller st.">
+              </div>
+            </div>
+            <p style="font-size:0.77rem;color:var(--gray);margin-top:0.6rem;line-height:1.5;">
+              <strong>OBS:</strong> Fragtmuligheder vises først ved indtastning af din fulde adresse, by og postnummer.
+              Vi leverer kun inden for 4 kilometer fra restauranten.
+            </p>
+            <button class="tjek-zone-knap" id="tjek-zone-knap" onclick="tjekLeveringszone()">Tjek leveringszone</button>
+            <div class="zone-resultat" id="zone-resultat" role="status" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <!-- 3. Ønsket tidspunkt -->
+        <div class="kassen-sektion">
+          <h3>3. Hvornår ønskes maden klar?</h3>
+          <div class="kassen-felt">
+            <label for="ks-tidspunkt">Ønsket tidspunkt</label>
+            <select id="ks-tidspunkt" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:0.95rem;background:white;">
+              <option value="Snarest muligt">Snarest muligt</option>
+            </select>
+            <p style="font-size:0.78rem;color:var(--gray);margin-top:0.5rem;line-height:1.5;">
+              Levering tager ca. <strong>30–60 min</strong> &nbsp;·&nbsp; Afhentning klar på ca. <strong>20–30 min</strong>
+            </p>
+          </div>
+        </div>
+
+        <!-- 4. Notes -->
+        <div class="kassen-sektion">
+          <h3>4. Bemærkninger (valgfrit)</h3>
+
+          <div class="kassen-felt">
+            <textarea id="ks-kommentar" rows="3" style="resize:vertical;"
+              placeholder="Allergi, etage / dørtelefon, særlige ønsker…"></textarea>
+          </div>
+        </div>
+
+        <!-- 4. Payment -->
+        <div class="kassen-sektion">
+          <h3>5. Betaling</h3>
+          <div id="betaling-indhold"></div>
+        </div>
+
+        <button class="placer-ordre-knap" id="placer-ordre-knap" onclick="placerOrdre()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Bekræft bestilling →
+        </button>
+        <div class="sikker-betaling-info">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Sikker betaling — SSL krypteret
+        </div>
+
+      </div><!-- /kassen-venstre -->
+
+      <!-- Right: Order summary -->
+      <div class="kassen-hojre">
+        <div class="ordre-oversigt">
+          <h3>Din ordre</h3>
+          <div id="kassen-ordre-liste"></div>
+          <div class="ordre-samlet">
+            <div class="ordre-samlet-linje"><span>Subtotal</span><span id="kassen-subtotal-vis">—</span></div>
+            <div class="ordre-samlet-linje"><span>Levering</span><span id="kassen-levering-vis">Gratis</span></div>
+            <div class="ordre-samlet-linje total"><span>I alt</span><span id="kassen-total-vis">—</span></div>
+          </div>
+          <p class="ordre-moms" id="kassen-moms-vis"></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="side" id="side-ordre-bekraeftelse">
+  <div class="bekraeftelse-wrapper">
+
+    <div class="bekraeftelse-ikon">
+      <div class="bekr-ring"></div>
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+
+    <h2>Tak for din bestilling!</h2>
+    <p id="bekr-besked"></p>
+
+    <button type="button" id="bekr-ordrenr" class="bekr-ordrenr-pille" onclick="kopierOrdrenr()" style="display:none;" aria-label="Kopiér ordrenummer"></button>
+
+    <div id="bekr-info-kort" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:1rem 0 1.5rem;"></div>
+
+    <div class="bekraeftelse-detaljer" id="bekr-detaljer"></div>
+
+    <p class="bekr-tak-tekst">Tak fordi du valgte os — vi ses snart!</p>
+
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;max-width:420px;margin:0 auto;">
+      <button class="checkout-knap" id="bekr-genbestil-knap" onclick="genbestil()" style="flex:1;min-width:160px;">
+        Bestil det samme igen
+      </button>
+      <button class="placer-ordre-knap" onclick="showPage('hjem')" style="flex:1;min-width:160px;margin-top:0;">
+        Tilbage til forsiden
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- KURV DRAWER -->
+<!-- Mobile sticky CTA -->
+<div class="sticky-cta">
+  <a href="#" onclick="visSide('menu'); return false;">Bestil nu →</a>
+</div>
+
+<!-- CART PAGE -->
+<div class="side" id="side-kurv">
+  <div class="container" style="padding:2rem 0 3rem;">
+    <div class="kurv-side-header">
+      <h2>Din kurv</h2>
+      <a href="#" onclick="visSide('menu'); return false;" class="kurv-tilbage-link">← Tilbage til menuen</a>
+    </div>
+    <div class="kurv-layout" id="kurv-side-indhold"></div>
+  </div>
+</div>
+
+<div class="kurv-overlay" id="kurv-overlay" onclick="closeCart()"></div>
+<div class="kurv-skuffe" id="kurv-skuffe">
+  <div class="kurv-header">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <svg width="10" height="10" viewBox="0 0 20 20" fill="none">
+        <circle cx="10" cy="10" r="2.5" fill="#C89B3C"/>
+        <line x1="10" y1="0" x2="10" y2="5" stroke="#C89B3C" stroke-width="1.3"/>
+        <line x1="10" y1="15" x2="10" y2="20" stroke="#C89B3C" stroke-width="1.3"/>
+        <line x1="0" y1="10" x2="5" y2="10" stroke="#C89B3C" stroke-width="1.3"/>
+        <line x1="15" y1="10" x2="20" y2="10" stroke="#C89B3C" stroke-width="1.3"/>
+      </svg>
+      Din kurv
+    </div>
+    <button class="luk-knap" onclick="closeCart()" aria-label="Luk kurv"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="kurv-indhold" id="kurv-indhold">
+    <div class="kurv-tom"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 0.6rem;"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Din kurv er tom<br><a href="#" onclick="closeCart(); visSide('menu'); return false;" style="display:inline-block;margin-top:0.75rem;font-size:0.82rem;font-weight:700;color:var(--red);text-decoration:none;">Se menu →</a></div>
+  </div>
+  <div class="kurv-footer">
+    <div class="kurv-info-strip">
+      <span>Levering: <strong id="kurv-levering-hint">40 kr.</strong></span>
+    </div>
+    <div class="kurv-total">
+      <span>Total</span>
+      <span id="kurv-total">0 kr.</span>
+    </div>
+    <button class="checkout-knap" onclick="showCheckout()">Gå til kassen →</button>
+    <div style="text-align:center; margin-top:0.75rem;">
+      <span style="display:inline-block; background:#1a1a2e; border-radius:6px; padding:4px 10px;">
+        <img src="images/payment-methods.png" alt="Betalingsmetoder" style="height:24px; width:auto; opacity:0.95; display:block;">
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="pm-overlay" id="pm-overlay" onclick="closeProductModal()"></div>
+<div class="pm-modal" id="pm-modal" role="dialog">
+  <button class="pm-luk-knap" onclick="closeProductModal()" aria-label="Luk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  <div class="pm-grid">
+    <div class="pm-img-wrapper" id="pm-img-wrapper"></div>
+    <div class="pm-detaljer" id="pm-detaljer"></div>
+  </div>
+  <div class="pm-sticky-bar" id="pm-sticky-bar"></div>
+</div>
+
+<script src="script.js?v=12" defer></script>
+
+<script>
+(function() {
+
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      if (el.classList.contains('afslor-gruppe')) {
+        el.querySelectorAll(':scope > *').forEach((child, i) => {
+          child.style.opacity = '0';
+          child.style.transform = 'translateY(28px)';
+          child.style.transition = `opacity 0.55s ease ${i * 0.07}s, transform 0.55s ease ${i * 0.07}s`;
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            child.style.opacity = '1';
+            child.style.transform = 'none';
+          }));
+        });
+      } else {
+        el.classList.add('er-synlig');
+      }
+      revealObs.unobserve(el);
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.afslor, .afslor-gruppe').forEach(el => revealObs.observe(el));
+
+  const header = document.querySelector('.site-header');
+  if (header) {
+    window.addEventListener('scroll', () => {
+      header.classList.toggle('scrollet', window.scrollY > 60);
+    }, { passive: true });
+  }
+
+  function syncBadge() {
+    const badge = document.getElementById('kurv-badge');
+    if (!badge) return;
+    badge.dataset.empty = (parseInt(badge.textContent) || 0) === 0 ? 'true' : 'false';
+  }
+  syncBadge();
+  const badge = document.getElementById('kurv-badge');
+  if (badge) new MutationObserver(syncBadge).observe(badge, { childList: true, characterData: true, subtree: true });
+
+  setTimeout(() => {
+    const meta = document.getElementById('hero-meta');
+    if (meta) meta.classList.add('loaded');
+  }, 400);
+
+  document.querySelectorAll('.kat-kort').forEach(c => {
+    c.addEventListener('mouseenter', () => { c.style.willChange = 'transform'; });
+    c.addEventListener('mouseleave', () => { c.style.willChange = 'auto'; });
+  });
+
+})();
+</script>
+
+<div id="cookie-overlay" class="cookie-overlay">
+  <div class="cookie-dialog" role="dialog" aria-modal="true" aria-label="Cookieindstillinger">
+    <button class="cookie-close" onclick="closeCookies()" aria-label="Luk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h2 class="cookie-title">Cookieindstillinger</h2>
+
+    <!-- Nødvendig -->
+    <div class="cookie-cat">
+      <div class="cookie-cat-header" onclick="toggleCookieCat('necessary')">
+        <span class="cookie-chevron" id="chev-necessary">&#8743;</span>
+        <span class="cookie-cat-name">Nødvendig</span>
+        <span class="cookie-always-on">Altid aktiveret</span>
+        <div class="cookie-pill on"></div>
+      </div>
+      <div class="cookie-cat-body" id="cat-necessary">
+        <p>Nødvendige cookies er helt essentielle for at hjemmesiden fungerer ordentligt. Under denne kategori findes der kun cookies der sikrer de basale funktioner og sikkerhedsforanstaltninger på hjemmesiden. Disse cookies gemmer ingen personlige informationer.</p>
+      </div>
+    </div>
+
+    <!-- Funktionel -->
+    <div class="cookie-cat">
+      <div class="cookie-cat-header" onclick="toggleCookieCat('functional')">
+        <span class="cookie-chevron" id="chev-functional">&#8743;</span>
+        <span class="cookie-cat-name">Funktionel</span>
+        <label class="cookie-pill-wrap" onclick="event.stopPropagation()">
+          <span class="cookie-status" id="status-functional">Deaktiveret</span>
+          <div class="cookie-pill-toggle" id="pill-functional" onclick="toggleCookiePill('functional')"></div>
+        </label>
+      </div>
+      <div class="cookie-cat-body" id="cat-functional">
+        <p>Funktionelle cookies genkender dig på den angivne hjemmeside og husker dine tidligere indstillinger. Dette kunne eks. være hvilket sprog du bruger, for at give dig de bedre funktionalitet og bedre personlige features.</p>
+      </div>
+    </div>
+
+    <!-- Statistik -->
+    <div class="cookie-cat">
+      <div class="cookie-cat-header" onclick="toggleCookieCat('statistics')">
+        <span class="cookie-chevron" id="chev-statistics">&#8743;</span>
+        <span class="cookie-cat-name">Statistik</span>
+        <label class="cookie-pill-wrap" onclick="event.stopPropagation()">
+          <span class="cookie-status" id="status-statistics">Deaktiveret</span>
+          <div class="cookie-pill-toggle" id="pill-statistics" onclick="toggleCookiePill('statistics')"></div>
+        </label>
+      </div>
+      <div class="cookie-cat-body" id="cat-statistics">
+        <p>Statistik cookies hjælper os med at forstå, hvordan besøgende interagerer med hjemmesiden ved at indsamle og rapportere information anonymt.</p>
+        <table class="cookie-table">
+          <tr><th>Leverandør</th><th>Cookie</th><th>Udløb</th></tr>
+          <tr><td>Google Analytics</td><td>_ga</td><td>2 år</td></tr>
+          <tr><td>Google Analytics</td><td>_gid</td><td>24 timer</td></tr>
+          <tr><td>Google Analytics</td><td>_ga_</td><td>2 år</td></tr>
+          <tr><td>Google Analytics</td><td>_gac_gb_</td><td>90 dage</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Marketing -->
+    <div class="cookie-cat">
+      <div class="cookie-cat-header" onclick="toggleCookieCat('marketing')">
+        <span class="cookie-chevron" id="chev-marketing">&#8743;</span>
+        <span class="cookie-cat-name">Marketing</span>
+        <label class="cookie-pill-wrap" onclick="event.stopPropagation()">
+          <span class="cookie-status" id="status-marketing">Deaktiveret</span>
+          <div class="cookie-pill-toggle" id="pill-marketing" onclick="toggleCookiePill('marketing')"></div>
+        </label>
+      </div>
+      <div class="cookie-cat-body" id="cat-marketing">
+        <p>Marketing cookies bruges til at samle data omkring din hjemmeside med det formål at gøre reklamer mere relevante for dig og andre brugere.</p>
+        <table class="cookie-table">
+          <tr><th>Leverandør</th><th>Cookie</th><th>Udløb</th></tr>
+          <tr><td>Facebook</td><td>_fbp</td><td>3 måneder</td></tr>
+          <tr><td>Bing</td><td>MUID</td><td>1 år</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <button class="cookie-accept-btn" onclick="acceptAllCookies()">Jeg er enig</button>
+
+    <div class="cookie-footer-links">
+      <a href="#" onclick="visSide('kontakt'); closeCookies(); return false;">Løfte om privatliv</a>
+      <span>·</span>
+      <a href="#" onclick="visSide('kontakt'); closeCookies(); return false;">Vilkår for brug</a>
+      <span>·</span>
+      <a href="#" onclick="document.getElementById('cookie-overlay').style.display='flex'; return false;">Om Cookies</a>
+    </div>
+  </div>
+</div>
+
+<script>
+/* LANGUAGE TOGGLE */
+const LP_TRANSLATIONS = {
+  da: {
+    nav_home: 'Hjem', nav_menu: 'Menu', nav_contact: 'Kontakt',
+    header_order: 'Bestil nu', header_cart: 'Kurv',
+    hero_welcome: 'Velkommen til', hero_baked: 'bagt med kærlighed',
+    hero_sub: 'Familiedrevet pizzarestaurant i Aalborg siden 1993',
+    hero_btn_order: 'Bestil nu', hero_btn_menu: 'Se menuen',
+    kat_pre: 'vores', kat_gold: 'kategorier',
+    kat_limited: 'Limited Edition', kat_children: 'Børnemenu', kat_salads: 'Salater', kat_drinks: 'Drikkevarer', kat_desserts: 'Desserter',
+    contact_title: 'Kontakt os',
+    contact_lbl_contact: 'Kontakt', contact_lbl_address: 'Adresse', contact_lbl_hours: 'Åbningstider',
+    hours_mon_thu: 'Man–Tor', hours_fri_sat: 'Fre–Lør', hours_sun: 'Søndag',
+    contact_btn_menu: 'Se menuen →', contact_btn_map: 'Find os på kort →',
+    footer_lbl_address: 'Adresse', footer_lbl_hours: 'Åbningstider', footer_lbl_contact: 'Kontakt',
+    footer_map: 'Find os på kort →',
+    footer_hrs_1: 'Man–Tor: 16:00–21:30', footer_hrs_2: 'Fre–Lør: 15:30–21:30', footer_hrs_3: 'Søn: 16:00–21:30',
+    map_title: 'Find vejen til La Pronto',
+    map_directions_btn: 'Få rutevejledning',
+    chef_since: 'Siden 1993', chef_title_pre: 'Lavet med', chef_title_gold: 'kærlighed',
+    chef_desc: 'Vi er en familiedrevet pizzarestaurant i Aalborg Øst. I over 30 år har vi bagt pizzaer med de fineste råvarer og serveret dem med et smil til hver eneste gæst.',
+    chef_years: 'Års erfaring', chef_dishes: 'Retter på menuen', chef_family: 'Familiedrevet'
+  },
+  en: {
+    nav_home: 'Home', nav_menu: 'Menu', nav_contact: 'Contact',
+    header_order: 'Order now', header_cart: 'Cart',
+    hero_welcome: 'Welcome to', hero_baked: 'baked with love',
+    hero_sub: 'Family-run pizza restaurant in Aalborg since 1993',
+    hero_btn_order: 'Order now', hero_btn_menu: 'See the menu',
+    kat_pre: 'our', kat_gold: 'categories',
+    kat_limited: 'Limited Edition', kat_children: "Children's Menu", kat_salads: 'Salads', kat_drinks: 'Drinks', kat_desserts: 'Desserts',
+    contact_title: 'Contact us',
+    contact_lbl_contact: 'Contact', contact_lbl_address: 'Address', contact_lbl_hours: 'Opening hours',
+    hours_mon_thu: 'Mon–Thu', hours_fri_sat: 'Fri–Sat', hours_sun: 'Sunday',
+    contact_btn_menu: 'See the menu →', contact_btn_map: 'Find us on the map →',
+    footer_lbl_address: 'Address', footer_lbl_hours: 'Opening hours', footer_lbl_contact: 'Contact',
+    footer_map: 'Find us on the map →',
+    footer_hrs_1: 'Mon–Thu: 16:00–21:30', footer_hrs_2: 'Fri–Sat: 15:30–21:30', footer_hrs_3: 'Sun: 16:00–21:30',
+    map_title: 'Find your way to La Pronto',
+    map_directions_btn: 'Get directions',
+    chef_since: 'Since 1993', chef_title_pre: 'Made with', chef_title_gold: 'love',
+    chef_desc: 'We are a family-run pizza restaurant in Aalborg East. For over 30 years we have baked pizzas with the finest ingredients and served them with a smile to every guest.',
+    chef_years: 'Years of experience', chef_dishes: 'Items on the menu', chef_family: 'Family-run'
+  }
+};
+
+function setLanguage(lang) {
+  localStorage.setItem('lp-lang', lang);
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (LP_TRANSLATIONS[lang] && LP_TRANSLATIONS[lang][key]) {
+      el.textContent = LP_TRANSLATIONS[lang][key];
+    }
+  });
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+  /* Re-render category grid and menu items */
+  if (typeof buildKatGrid === 'function') buildKatGrid();
+  if (typeof buildSidebarNav === 'function') buildSidebarNav();
+  if (typeof showMenuItems === 'function') {
+    showMenuItems(window._currentKat || 'Pizza');
+  }
+}
+
+/* COOKIE CONSENT */
+const LP_COOKIE_KEY = 'lp-cookie-consent';
+const cookieState = { functional: false, statistics: false, marketing: false };
+
+function initCookies() {
+  if (!localStorage.getItem(LP_COOKIE_KEY)) {
+    document.getElementById('cookie-overlay').style.display = 'flex';
+  }
+}
+
+function closeCookies() {
+  document.getElementById('cookie-overlay').style.display = 'none';
+}
+
+function acceptAllCookies() {
+  const prefs = { necessary: true, functional: true, statistics: true, marketing: true };
+  localStorage.setItem(LP_COOKIE_KEY, JSON.stringify(prefs));
+  closeCookies();
+}
+
+function toggleCookiePill(cat) {
+  cookieState[cat] = !cookieState[cat];
+  const pill = document.getElementById('pill-' + cat);
+  const status = document.getElementById('status-' + cat);
+  pill.classList.toggle('on', cookieState[cat]);
+  status.textContent = cookieState[cat] ? 'Aktiveret' : 'Deaktiveret';
+}
+
+function toggleCookieCat(cat) {
+  const body = document.getElementById('cat-' + cat);
+  const chev = document.getElementById('chev-' + cat);
+  const open = body.classList.toggle('open');
+  chev.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
+}
+
+/* Init on load */
+document.addEventListener('DOMContentLoaded', function () {
+  const lang = localStorage.getItem('lp-lang') || 'da';
+  setLanguage(lang);
+  initCookies();
+});
+</script>
+</body>
+</html>

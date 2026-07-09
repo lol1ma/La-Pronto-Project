@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>La Pronto — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Poppins', sans-serif; background: #f5f4f0; color: #1a1a1a; min-height: 100vh; }
+
+    /* LOGIN */
+    #login-screen {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; background: #160d22;
+    }
+    .login-box {
+      background: #fff; border-radius: 16px; padding: 2.5rem 2rem;
+      width: 100%; max-width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .login-box h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .login-box p  { font-size: 0.82rem; color: #888; margin-bottom: 1.5rem; }
+    .login-box input {
+      width: 100%; padding: 0.75rem 1rem; border: 1.5px solid #ddd;
+      border-radius: 8px; font-family: inherit; font-size: 0.95rem;
+      margin-bottom: 0.75rem; outline: none; transition: border-color 0.2s;
+    }
+    .login-box input:focus { border-color: #5B1FA8; }
+    .login-box button {
+      width: 100%; padding: 0.8rem; background: #5B1FA8; color: #fff;
+      border: none; border-radius: 8px; font-family: inherit; font-size: 0.95rem;
+      font-weight: 600; cursor: pointer; transition: background 0.2s;
+    }
+    .login-box button:hover { background: #4a1890; }
+    #login-err { color: #c00; font-size: 0.82rem; margin-bottom: 0.75rem; display: none; }
+
+    /* DASHBOARD */
+    #dashboard { display: none; }
+    .top-bar {
+      background: #160d22; color: #fff; padding: 1rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .top-bar h1 { font-size: 1.1rem; font-weight: 700; }
+    .top-bar button {
+      background: rgba(255,255,255,0.12); color: #fff; border: none;
+      border-radius: 8px; padding: 0.5rem 1rem; font-family: inherit;
+      font-size: 0.82rem; cursor: pointer;
+    }
+    .main { max-width: 940px; margin: 0 auto; padding: 2rem 1.25rem 6rem; }
+
+    /* SECTIONS */
+    .section {
+      background: #fff; border-radius: 12px; padding: 1.5rem;
+      margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .section h2 { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .section .sub { font-size: 0.78rem; color: #888; margin-bottom: 1.25rem; }
+
+    /* TABS */
+    .tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .tab {
+      padding: 0.55rem 1rem; border-radius: 10px; border: 1.5px solid #e0ddd8;
+      font-size: 0.82rem; cursor: pointer; background: #fafaf8; font-family: inherit;
+      transition: all 0.15s; display: flex; align-items: center; gap: 0.4rem;
+      white-space: nowrap;
+    }
+    .tab:hover          { border-color: #c5b8f0; background: #f3f0fb; }
+    .tab.active         { background: #5B1FA8; color: #fff; border-color: #5B1FA8; }
+    .tab.tab-le         { border-color: #d97706; color: #92400e; background: #fffbeb; }
+    .tab.tab-le.active  { background: #d97706; color: #fff; border-color: #d97706; }
+    .tab-count {
+      display: inline-block; background: rgba(0,0,0,0.09); border-radius: 10px;
+      padding: 0.05rem 0.42rem; font-size: 0.68rem; font-weight: 700; line-height: 1.4;
+    }
+    .tab.active .tab-count   { background: rgba(255,255,255,0.22); }
+    .tab.tab-le .tab-count   { background: rgba(217,119,6,0.12); }
+
+    /* DRAG HANDLE + DRAG STATE */
+    .drag-handle {
+      cursor: grab; color: #ccc; font-size: 1.05rem; user-select: none;
+      flex-shrink: 0; padding: 0 0.1rem; line-height: 1;
+    }
+    .drag-handle:hover { color: #999; }
+    .item-card.drag-over {
+      border-color: #5B1FA8; border-width: 2px;
+      box-shadow: 0 0 0 3px rgba(91,31,168,0.12);
+    }
+    .item-card.dragging { opacity: 0.25; }
+    .group-label.drag-over { color: #4a1890; }
+
+    /* ITEM CARDS */
+    .item-card {
+      background: #fafaf8; border: 1.5px solid #e8e2da;
+      border-radius: 10px; padding: 0.85rem; margin-bottom: 0.65rem;
+      transition: border-color 0.15s;
+    }
+    .item-card:hover { border-color: #c5b8f0; }
+    .item-card.is-hidden { opacity: 0.45; border-style: dashed; }
+
+    .card-row {
+      display: flex; gap: 0.45rem; align-items: center; margin-bottom: 0.45rem;
+    }
+    .card-row:last-child { margin-bottom: 0; }
+
+    .card-input {
+      flex: 1; padding: 0.42rem 0.65rem; border: 1.5px solid #e0ddd8;
+      border-radius: 6px; font-family: inherit; font-size: 0.82rem; outline: none;
+      transition: border-color 0.15s; min-width: 0;
+    }
+    .card-input:focus { border-color: #5B1FA8; }
+    .pris-input { flex: 0 0 80px; width: 80px; }
+
+    .card-badges {
+      display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;
+      padding-top: 0.45rem; border-top: 1px solid #f0eeea; margin-top: 0.25rem;
+    }
+    .badge-check {
+      display: flex; align-items: center; gap: 0.3rem;
+      font-size: 0.76rem; cursor: pointer; user-select: none;
+    }
+    .badge-check input[type="checkbox"] { accent-color: #5B1FA8; width: 14px; height: 14px; cursor: pointer; }
+    .hidden-toggle { margin-left: auto; }
+    .hidden-toggle input[type="checkbox"] { accent-color: #dc2626; }
+
+    /* GROUP LABELS */
+    .group-label {
+      font-size: 0.72rem; font-weight: 700; color: #5B1FA8;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.9rem 0 0.35rem; margin-top: 0.25rem;
+    }
+
+    /* DELETE BUTTON */
+    .del-btn {
+      flex: 0 0 30px; width: 30px; height: 30px; border: none; background: #fee;
+      color: #c00; border-radius: 6px; cursor: pointer; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .del-btn:hover { background: #fcc; }
+
+    /* DUPLICATE BUTTON */
+    .dup-btn {
+      flex: 0 0 30px; width: 30px; height: 30px; border: none; background: #f0f0fe;
+      color: #5B1FA8; border-radius: 6px; cursor: pointer; font-size: 0.82rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .dup-btn:hover { background: #e0dbf8; }
+
+    /* UPLOAD BUTTON */
+    .upload-btn {
+      flex: 0 0 auto; padding: 0.42rem 0.6rem; background: #f0eeea;
+      border: 1.5px solid #e0ddd8; border-radius: 6px; cursor: pointer;
+      font-size: 0.82rem; font-family: inherit; white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .upload-btn:hover { background: #e5e0d8; }
+    .upload-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* IMAGE PREVIEW */
+    .img-preview {
+      flex-shrink: 0; width: 38px; height: 38px; object-fit: cover;
+      border-radius: 5px; border: 1px solid #e0ddd8; background: #f5f4f0;
+    }
+
+    /* ADD OPEN BUTTON */
+    .add-open-btn {
+      display: block; width: 100%; padding: 0.9rem; margin-top: 1.25rem;
+      background: #f3f0fb; border: 2px dashed #c5b8f0; border-radius: 10px;
+      color: #5B1FA8; font-family: inherit; font-size: 0.9rem; font-weight: 700;
+      cursor: pointer; transition: all 0.15s; text-align: center;
+    }
+    .add-open-btn:hover { background: #ebe5f8; border-color: #5B1FA8; }
+
+    /* ADD MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 300;
+      display: flex; align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal-box {
+      background: #fff; border-radius: 16px; width: 100%; max-width: 500px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.35); display: flex; flex-direction: column;
+      max-height: 92vh;
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 1.5rem; border-bottom: 1px solid #f0eeea; flex-shrink: 0;
+    }
+    .modal-header h2 { font-size: 1rem; font-weight: 700; }
+    .modal-cat-badge {
+      font-size: 0.72rem; background: #f0f0fe; color: #5B1FA8; padding: 0.2rem 0.55rem;
+      border-radius: 20px; font-weight: 600; margin-left: 0.6rem;
+    }
+    .modal-close {
+      background: none; border: none; font-size: 1.1rem; cursor: pointer;
+      color: #aaa; width: 32px; height: 32px; display: flex; align-items: center;
+      justify-content: center; border-radius: 6px; transition: background 0.15s;
+    }
+    .modal-close:hover { background: #f0eeea; color: #333; }
+    .modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
+    .modal-label {
+      font-size: 0.73rem; font-weight: 600; color: #555; display: block;
+      margin-bottom: 0.3rem; margin-top: 0.9rem;
+    }
+    .modal-label:first-child { margin-top: 0; }
+    .modal-input {
+      width: 100%; padding: 0.6rem 0.8rem; border: 1.5px solid #e0ddd8;
+      border-radius: 8px; font-family: inherit; font-size: 0.88rem; outline: none;
+      transition: border-color 0.15s;
+    }
+    .modal-input:focus { border-color: #5B1FA8; }
+    .modal-input.invalid { border-color: #dc2626; }
+    .modal-img-row { display: flex; gap: 0.4rem; align-items: center; }
+    .modal-img-row .modal-input { flex: 1; }
+    .modal-pris-row { display: flex; align-items: center; gap: 0.5rem; }
+    .modal-pris-row .modal-input { max-width: 120px; }
+    .modal-pris-row span { font-size: 0.85rem; color: #888; }
+    .modal-badges {
+      display: flex; gap: 0.65rem; flex-wrap: wrap; margin-top: 1rem;
+      padding: 0.75rem; background: #fafaf8; border-radius: 8px; border: 1px solid #f0eeea;
+    }
+    .modal-footer {
+      padding: 1rem 1.5rem; border-top: 1px solid #f0eeea;
+      display: flex; gap: 0.75rem; justify-content: flex-end; flex-shrink: 0;
+    }
+    .modal-cancel { padding: 0.65rem 1.25rem; background: #f5f4f0; border: none;
+      border-radius: 8px; font-family: inherit; font-size: 0.88rem; cursor: pointer; }
+    .modal-confirm {
+      padding: 0.65rem 1.75rem; background: #5B1FA8; color: #fff; border: none;
+      border-radius: 8px; font-family: inherit; font-size: 0.9rem; font-weight: 700;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .modal-confirm:hover { background: #4a1890; }
+
+    /* LE BANNER */
+    .le-banner {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border: 1.5px solid #d97706; border-radius: 10px; padding: 0.85rem 1rem;
+      margin-bottom: 1rem; font-size: 0.82rem; color: #78350f; line-height: 1.5;
+    }
+    .le-banner strong { display: block; font-size: 0.88rem; margin-bottom: 0.2rem; }
+
+    /* ADD FORM */
+    .add-section {
+      margin-top: 1.25rem; padding-top: 1.25rem;
+      border-top: 1.5px dashed #e0ddd8;
+    }
+    .add-section h3 { font-size: 0.82rem; font-weight: 700; color: #5B1FA8; margin-bottom: 0.75rem; }
+    .add-grid {
+      display: grid;
+      grid-template-columns: 1fr 80px 1.4fr;
+      gap: 0.5rem; margin-bottom: 0.5rem;
+    }
+    .add-grid-full { margin-bottom: 0.5rem; }
+    .add-img-row { display: flex; gap: 0.4rem; align-items: center; margin-bottom: 0.5rem; }
+    .add-badges-row {
+      display: flex; gap: 0.65rem; flex-wrap: wrap; align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    .add-input {
+      width: 100%; padding: 0.48rem 0.7rem; border: 1.5px solid #e0ddd8;
+      border-radius: 8px; font-family: inherit; font-size: 0.82rem; outline: none;
+      transition: border-color 0.15s;
+    }
+    .add-input:focus { border-color: #5B1FA8; }
+    .add-label { font-size: 0.7rem; color: #888; display: block; margin-bottom: 0.2rem; }
+    .add-btn {
+      padding: 0.55rem 1.25rem; background: #5B1FA8; color: #fff; border: none;
+      border-radius: 8px; font-family: inherit; font-size: 0.82rem; font-weight: 600;
+      cursor: pointer;
+    }
+    .add-btn:hover { background: #4a1890; }
+
+    /* SAVE BAR */
+    .save-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; background: #fff;
+      border-top: 1px solid #e8e2da; padding: 0.9rem 1.5rem;
+      display: flex; align-items: center; gap: 1rem; z-index: 50;
+    }
+    .save-btn {
+      padding: 0.7rem 2rem; background: #5B1FA8; color: #fff; border: none;
+      border-radius: 10px; font-family: inherit; font-size: 0.9rem; font-weight: 700;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .save-btn:hover { background: #4a1890; }
+    .save-btn:disabled { background: #aaa; cursor: not-allowed; }
+    #save-msg { font-size: 0.85rem; font-weight: 600; }
+    #save-msg.ok  { color: #166534; }
+    #save-msg.err { color: #c00; }
+    .dl-btn {
+      padding: 0.7rem 1rem; background: #f0eeea; color: #555; border: 1.5px solid #e0ddd8;
+      border-radius: 10px; font-family: inherit; font-size: 0.82rem; font-weight: 600;
+      cursor: pointer; transition: background 0.2s; white-space: nowrap;
+    }
+    .dl-btn:hover { background: #e5e0d8; }
+
+    /* NOTICE SECTION */
+    .notice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.75rem; }
+    .notice-grid input, .notice-grid textarea {
+      width: 100%; padding: 0.5rem 0.75rem; border: 1.5px solid #e0ddd8;
+      border-radius: 8px; font-family: inherit; font-size: 0.85rem; resize: vertical;
+    }
+    .notice-grid label { font-size: 0.75rem; color: #888; display: block; margin-bottom: 0.25rem; }
+    .full { grid-column: 1 / -1; }
+    .toggle { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .toggle input[type="checkbox"] { width: 18px; height: 18px; accent-color: #5B1FA8; }
+    .notice-save-btn {
+      margin-top: 1rem; padding: 0.6rem 1.5rem; background: #5B1FA8; color: #fff;
+      border: none; border-radius: 8px; font-family: inherit; font-size: 0.85rem;
+      font-weight: 600; cursor: pointer;
+    }
+    #notice-msg { font-size: 0.82rem; color: #166534; font-weight: 600; margin-top: 0.5rem; display: none; }
+
+    /* CONFIG SECTION (hours + coupons) */
+    .config-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.25rem;
+    }
+    .config-block h3 { font-size: 0.82rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .hours-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+    .hours-label { font-size: 0.75rem; color: #888; flex: 0 0 180px; }
+    .hours-input {
+      padding: 0.4rem 0.6rem; border: 1.5px solid #e0ddd8; border-radius: 6px;
+      font-family: inherit; font-size: 0.82rem; outline: none; width: 95px;
+    }
+    .hours-input:focus { border-color: #5B1FA8; }
+
+    .add-coupon-btn {
+      padding: 0.42rem 0.9rem; background: #5B1FA8; color: #fff; border: none;
+      border-radius: 6px; font-family: inherit; font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; white-space: nowrap;
+    }
+
+    .cfg-save-wrap { display: flex; align-items: center; gap: 1rem; margin-top: 1.25rem; border-top: 1px solid #f0eeea; padding-top: 1rem; }
+    .cfg-save-btn {
+      padding: 0.6rem 1.5rem; background: #1a7f4b; color: #fff; border: none;
+      border-radius: 8px; font-family: inherit; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .cfg-save-btn:hover { background: #166534; }
+    .cfg-save-btn:disabled { background: #aaa; cursor: not-allowed; }
+    #cfg-msg { font-size: 0.82rem; font-weight: 600; }
+    #cfg-msg.ok  { color: #166534; }
+    #cfg-msg.err { color: #c00; }
+
+    @media (max-width: 680px) {
+      .config-grid { grid-template-columns: 1fr; }
+      .add-grid { grid-template-columns: 1fr 70px; }
+      .notice-grid { grid-template-columns: 1fr; }
+      .hours-label { flex: 0 0 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <h1>La Pronto Admin</h1>
+    <p>Log ind for at redigere menuen</p>
+    <div id="login-err">Forkert adgangskode</div>
+    <input type="password" id="pw-input" placeholder="Adgangskode"
+           onkeydown="if(event.key==='Enter') doLogin()">
+    <button onclick="doLogin()">Log ind</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="top-bar">
+    <h1>🍕 La Pronto Admin</h1>
+    <div style="display:flex;gap:0.5rem;align-items:center;">
+      <a href="./index.html" target="_blank"
+         style="background:rgba(255,255,255,0.12);color:#fff;border-radius:8px;padding:0.5rem 1rem;font-size:0.82rem;text-decoration:none;font-family:inherit;">
+        Se hjemmeside →
+      </a>
+      <button onclick="doLogout()">Log ud</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- Besked øverst -->
+    <div class="section">
+      <h2>Besked øverst på siden</h2>
+      <p class="sub">Vises til alle besøgende. Gem og publicer for at aktivere.</p>
+      <div class="toggle">
+        <input type="checkbox" id="notice-on">
+        <label for="notice-on" style="font-size:0.88rem;">Vis besked</label>
+      </div>
+      <div class="notice-grid">
+        <div class="full">
+          <label>Beskedtekst</label>
+          <textarea id="notice-txt" rows="2" placeholder="F.eks. Restauranten holder lukket den 24. december."></textarea>
+        </div>
+        <div>
+          <label>Vis fra dato</label>
+          <input type="date" id="notice-fra">
+        </div>
+        <div>
+          <label>Vis til dato</label>
+          <input type="date" id="notice-til">
+        </div>
+      </div>
+      <button class="notice-save-btn" onclick="saveNotice()">Gem og publicer</button>
+      <div id="notice-msg">✓ Besked gemt!</div>
+    </div>
+
+    <!-- Åbningstider -->
+    <div class="section">
+      <h2>Åbningstider</h2>
+      <p class="sub">Ændringer gemmes til serveren og gælder straks på hjemmesiden.</p>
+
+      <div class="config-block">
+        <div class="hours-row">
+          <span class="hours-label">Hverdage åbner (Man–Tor+Søn)</span>
+          <input type="time" id="h-wd-open" class="hours-input" value="16:00">
+        </div>
+        <div class="hours-row">
+          <span class="hours-label">Weekend åbner (Fre–Lør)</span>
+          <input type="time" id="h-we-open" class="hours-input" value="15:30">
+        </div>
+        <div class="hours-row">
+          <span class="hours-label">Lukker (alle dage)</span>
+          <input type="time" id="h-close" class="hours-input" value="21:30">
+        </div>
+        <div class="hours-row">
+          <span class="hours-label">Online bestilling lukker</span>
+          <input type="time" id="h-online-close" class="hours-input" value="20:30">
+        </div>
+      </div>
+
+      <div class="cfg-save-wrap">
+        <button class="cfg-save-btn" id="cfg-save-btn" onclick="saveConfig()">Gem indstillinger</button>
+        <span id="cfg-msg"></span>
+      </div>
+    </div>
+
+    <!-- Change password -->
+    <div class="section">
+      <h2>Skift kodeord</h2>
+      <p class="sub">Du modtager en bekræftelsesmail når kodeordet ændres.</p>
+      <div style="display:flex;flex-direction:column;gap:0.6rem;max-width:340px;">
+        <input type="password" id="pw-current" placeholder="Nuværende kodeord" style="padding:0.55rem 0.75rem;border:1px solid #ccc;border-radius:6px;font-size:0.9rem;">
+        <input type="password" id="pw-new" placeholder="Nyt kodeord (min. 6 tegn)" style="padding:0.55rem 0.75rem;border:1px solid #ccc;border-radius:6px;font-size:0.9rem;">
+        <input type="password" id="pw-confirm" placeholder="Bekræft nyt kodeord" style="padding:0.55rem 0.75rem;border:1px solid #ccc;border-radius:6px;font-size:0.9rem;">
+        <div style="display:flex;align-items:center;gap:1rem;">
+          <button onclick="changePassword()" style="background:#5B1FA8;color:#fff;border:none;border-radius:6px;padding:0.55rem 1.2rem;font-size:0.9rem;font-weight:700;cursor:pointer;">Skift kodeord</button>
+          <span id="pw-msg" style="font-size:0.82rem;"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menu editor -->
+    <div class="section">
+      <h2>Redigér menu</h2>
+      <p class="sub">Vælg kategori → rediger varer → klik "Gem ændringer" (den lilla knap nederst).</p>
+
+      <!-- Add new category -->
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;flex-wrap:wrap;">
+        <input type="text" id="new-cat-navn" placeholder="Ny kategori navn…" style="padding:0.45rem 0.7rem;border:1px solid #ccc;border-radius:6px;font-size:0.85rem;width:200px;">
+        <input type="text" id="new-cat-emoji" placeholder="Emoji (f.eks. 🍔)" style="padding:0.45rem 0.7rem;border:1px solid #ccc;border-radius:6px;font-size:0.85rem;width:110px;">
+        <button onclick="addNewCategory()" style="background:#5B1FA8;color:#fff;border:none;border-radius:6px;padding:0.45rem 0.9rem;font-size:0.85rem;font-weight:700;cursor:pointer;">+ Tilføj kategori</button>
+        <span id="new-cat-msg" style="font-size:0.8rem;"></span>
+      </div>
+
+      <div class="tabs" id="cat-tabs"></div>
+      <div id="items-editor"></div>
+
+      <!-- Add new item — opens modal -->
+      <button class="add-open-btn" id="add-open-btn" onclick="openAddModal()">+ Tilføj ny vare</button>
+    </div>
+
+  </div>
+
+  <!-- Sticky save bar (menu only) -->
+  <div class="save-bar">
+    <button class="save-btn" id="save-btn" onclick="saveMenu()">Gem ændringer</button>
+    <button class="dl-btn" onclick="downloadMenuJson()" title="Download menu.json til din computer">⬇ Download menu.json</button>
+    <span id="save-msg"></span>
+  </div>
+</div>
+
+<!-- ADD ITEM MODAL -->
+<div id="add-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeAddModal()">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2>Tilføj vare <span class="modal-cat-badge" id="modal-cat-label">Pizza</span></h2>
+      <button class="modal-close" onclick="closeAddModal()" title="Luk">✕</button>
+    </div>
+    <div class="modal-body">
+      <label class="modal-label">Navn *</label>
+      <input type="text" id="modal-navn" class="modal-input" placeholder="F.eks. 25. Mexicana"
+             onkeydown="if(event.key==='Enter')document.getElementById('modal-pris').focus()"
+             oninput="this.classList.remove('invalid')">
+
+      <label class="modal-label">Pris</label>
+      <div class="modal-pris-row">
+        <input type="number" id="modal-pris" class="modal-input" placeholder="75" min="0"
+               onkeydown="if(event.key==='Enter')document.getElementById('modal-besk').focus()">
+        <span>kr.</span>
+      </div>
+
+      <label class="modal-label">Beskrivelse / ingredienser</label>
+      <input type="text" id="modal-besk" class="modal-input" placeholder="F.eks. Ost, tomatsauce, pepperoni..."
+             onkeydown="if(event.key==='Enter')document.getElementById('modal-img').focus()">
+
+      <label class="modal-label">Billede</label>
+      <div class="modal-img-row" style="gap:0.5rem;">
+        <img id="modal-img-preview" class="img-preview" src="" style="opacity:0;width:48px;height:48px;"
+             onerror="this.style.opacity='0'" onload="this.style.opacity='1'">
+        <input type="text" id="modal-img" class="modal-input" placeholder="images/billede.jpg"
+               oninput="updateImgPreview(this)">
+        <button class="upload-btn" onclick="uploadImage(this,document.getElementById('modal-img'))">📤</button>
+      </div>
+
+      <div class="modal-badges">
+        <label class="badge-check"><input type="checkbox" id="modal-ny"> NY</label>
+        <label class="badge-check"><input type="checkbox" id="modal-populaer"> Populær</label>
+        <label class="badge-check"><input type="checkbox" id="modal-anbefalet"> Anbefalet</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-cancel" onclick="closeAddModal()">Annuller</button>
+      <button class="modal-confirm" onclick="confirmAddItem()">+ Tilføj vare</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// CONFIG
+// Password is server-side only (auth.php) — not stored here
+const SESSION_KEY = 'lp_admin_v2';
+const CATEGORIES  = ['Pizza','Durum','LimitedEdition','Grill','Børnemenu','Pasta','Salater','Desserter','Drikkevarer','Hjemmelavet Chilli'];
+
+// STATE
+let menuData     = {};
+let activeTab    = 'Pizza';
+
+// LOGIN / SESSION
+function doLogin() {
+  const pw  = document.getElementById('pw-input').value;
+  const err = document.getElementById('login-err');
+  err.style.display = 'none';
+
+  // Try server-side auth first
+  fetch('auth.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password: pw }),
+    credentials: 'same-origin'
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.success) {
+      sessionStorage.setItem(SESSION_KEY, '1');
+      openDashboard();
+    } else {
+      err.style.display = 'block';
+    }
+  })
+  .catch(() => {
+    err.textContent = 'Fejl: kunne ikke nå serveren';
+    err.style.display = 'block';
+  });
+}
+
+function doLogout() {
+  fetch('logout.php', { credentials: 'same-origin' }).catch(() => {});
+  sessionStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+
+function openDashboard() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display    = 'block';
+  loadMenu();
+  loadNotice();
+  loadConfig();
+}
+
+// Always show login screen — password required every time
+
+// SERVER DETECTION
+// true = PHP/Node server available, false = file:// or static server
+let hasServer = false;
+
+// MENU LOADING
+function loadMenu() {
+  fetch('menu.json?t=' + Date.now())
+    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+    .then(data => {
+      // Prefer localStorage if it's newer (edited since last server save)
+      const local = localStorage.getItem('lp_menu');
+      menuData = local ? JSON.parse(local) : data;
+      buildTabs();
+      renderEditor(activeTab);
+    })
+    .catch(() => {
+      // No server — load from localStorage
+      const local = localStorage.getItem('lp_menu');
+      if (local) {
+        menuData = JSON.parse(local);
+        buildTabs();
+        renderEditor(activeTab);
+        setMsg('Indlæst lokalt (ingen server)', 'ok');
+      } else {
+        setMsg('Ingen menu fundet — tilføj varer nedenfor', 'ok');
+        buildTabs();
+      }
+    });
+}
+
+// TABS
+const CAT_EMOJI = { Pizza:'🍕', Durum:'🌯', LimitedEdition:'🔥', Grill:'🥩', Børnemenu:'🧒', Pasta:'🍝', Salater:'🥗', Desserter:'🍰', Drikkevarer:'🥤', 'Hjemmelavet Chilli':'🌶️' };
+
+function buildTabs() {
+  const el = document.getElementById('cat-tabs');
+  el.innerHTML = CATEGORIES.map(cat => {
+    const isLE  = cat === 'LimitedEdition';
+    const label = isLE ? 'Limited Edition' : cat;
+    const emoji = CAT_EMOJI[cat] || '';
+    const count = (menuData[cat] || []).filter(i => !i.gruppe).length;
+    const cls   = `tab${cat === activeTab ? ' active' : ''}${isLE ? ' tab-le' : ''}`;
+    return `<button class="${cls}" onclick="switchTab('${cat}')">${emoji} ${label} <span class="tab-count">${count}</span></button>`;
+  }).join('');
+
+  const addBtn = document.getElementById('add-open-btn');
+  if (addBtn) {
+    addBtn.textContent = activeTab === 'LimitedEdition'
+      ? '🔥 Tilføj ny Limited Edition vare'
+      : `+ Tilføj ny ${activeTab}-vare`;
+  }
+}
+
+function switchTab(cat) {
+  collectCurrentTab();
+  activeTab = cat;
+  buildTabs();
+  renderEditor(cat);
+}
+
+// EDITOR
+function renderEditor(cat) {
+  const items = menuData[cat] || [];
+  const el    = document.getElementById('items-editor');
+  const isLE  = cat === 'LimitedEdition';
+
+  const leBanner = isLE ? `
+    <div class="le-banner">
+      <strong>🔥 Limited Edition-sektion</strong>
+      Her kan du tilføje, redigere og fjerne midlertidige special-varer.
+      Brug "Skjul fra menuen" for at gemme en vare til en anden gang uden at slette den.
+    </div>` : '';
+
+  el.innerHTML = leBanner + items.map((item, i) => {
+    if (item.gruppe) {
+      return `<div class="group-label" data-i="${i}"
+                   ondragstart="dragStart(event,${i})" ondragover="dragOver(event,${i})"
+                   ondrop="dragDrop(event,${i})" ondragend="dragEnd(event)">
+                <span class="drag-handle"
+                      onmousedown="this.closest('[data-i]').draggable=true">⠿</span> — ${item.gruppe} —</div>`;
+    }
+    const hidden = !!item.hidden;
+    return `
+      <div class="item-card${hidden ? ' is-hidden' : ''}" data-i="${i}"
+           ondragstart="dragStart(event,${i})" ondragover="dragOver(event,${i})"
+           ondrop="dragDrop(event,${i})" ondragend="dragEnd(event)">
+        <div class="card-row">
+          <span class="drag-handle" title="Træk for at flytte"
+                onmousedown="this.closest('[data-i]').draggable=true">⠿</span>
+          <input type="text"   class="card-input f-navn" value="${esc(item.navn || '')}"        placeholder="Navn">
+          <input type="number" class="card-input pris-input f-pris" value="${item.pris || ''}" placeholder="Pris" min="0">
+          <button class="dup-btn" onclick="event.stopPropagation();duplicateItem(${i})" title="Kopiér vare">📋</button>
+          <button class="del-btn" onclick="deleteItem(${i})" title="Slet">✕</button>
+        </div>
+        <div class="card-row">
+          <input type="text" class="card-input f-besk" value="${esc(item.beskrivelse || '')}" placeholder="Beskrivelse / ingredienser">
+        </div>
+        <div class="card-row">
+          <img class="img-preview" src="${esc(item.img||'')}"
+               onerror="this.style.opacity='0'" onload="this.style.opacity='1'"
+               style="${item.img ? '' : 'opacity:0'}">
+          <input type="text" class="card-input f-img" value="${esc(item.img || '')}"
+                 placeholder="images/billede.jpg"
+                 oninput="updateImgPreview(this)">
+          <button class="upload-btn" onclick="uploadImage(this,this.previousElementSibling)" title="Upload billede">📤</button>
+        </div>
+        <div class="card-badges">
+          <label class="badge-check" title="Vis 'NY' badge"><input type="checkbox" class="f-ny"       ${item.ny        ? 'checked' : ''}> NY</label>
+          <label class="badge-check" title="Vis 'Populær' badge"><input type="checkbox" class="f-populaer"  ${item.populaer  ? 'checked' : ''}> Populær</label>
+          <label class="badge-check" title="Vis 'Anbefalet' badge"><input type="checkbox" class="f-anbefalet" ${item.anbefalet ? 'checked' : ''}> Anbefalet</label>
+          <label class="badge-check hidden-toggle" title="Varen vises ikke i menuen"><input type="checkbox" class="f-hidden"    ${hidden        ? 'checked' : ''}
+                 onchange="this.closest('.item-card').classList.toggle('is-hidden', this.checked)"> Skjul fra menuen</label>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function updateImgPreview(input) {
+  const prev = input.previousElementSibling;
+  if (!prev || !prev.classList.contains('img-preview')) return;
+  prev.src = input.value;
+  prev.style.opacity = input.value ? '1' : '0';
+}
+
+// COLLECT EDITS FROM DOM
+function collectCurrentTab() {
+  document.querySelectorAll('#items-editor .item-card[data-i]').forEach(card => {
+    const i    = parseInt(card.dataset.i);
+    const item = menuData[activeTab]?.[i];
+    if (!item || item.gruppe) return;
+
+    item.navn        = card.querySelector('.f-navn').value.trim();
+    item.pris        = parseInt(card.querySelector('.f-pris').value) || 0;
+    item.beskrivelse = card.querySelector('.f-besk').value.trim();
+    item.img         = card.querySelector('.f-img').value.trim();
+
+    const ny        = card.querySelector('.f-ny').checked;
+    const populaer  = card.querySelector('.f-populaer').checked;
+    const anbefalet = card.querySelector('.f-anbefalet').checked;
+    const hidden    = card.querySelector('.f-hidden').checked;
+
+    if (ny)        item.ny        = true; else delete item.ny;
+    if (populaer)  item.populaer  = true; else delete item.populaer;
+    if (anbefalet) item.anbefalet = true; else delete item.anbefalet;
+    if (hidden)    item.hidden    = true; else delete item.hidden;
+  });
+}
+
+// ADD MODAL
+function openAddModal(prefill) {
+  const catLabel = activeTab === 'LimitedEdition' ? '🔥 Limited Edition' : (CAT_EMOJI[activeTab] || '') + ' ' + activeTab;
+  document.getElementById('modal-cat-label').textContent = catLabel;
+
+  document.getElementById('modal-navn').value      = prefill?.navn        || '';
+  document.getElementById('modal-pris').value      = prefill?.pris        || '';
+  document.getElementById('modal-besk').value      = prefill?.beskrivelse || '';
+  const imgVal = prefill?.img || '';
+  document.getElementById('modal-img').value        = imgVal;
+  document.getElementById('modal-ny').checked       = !!prefill?.ny;
+  document.getElementById('modal-populaer').checked = !!prefill?.populaer;
+  document.getElementById('modal-anbefalet').checked = !!prefill?.anbefalet;
+  document.getElementById('modal-navn').classList.remove('invalid');
+  const prev = document.getElementById('modal-img-preview');
+  if (prev) { prev.src = imgVal; prev.style.opacity = imgVal ? '1' : '0'; }
+
+  document.getElementById('add-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('modal-navn').focus(), 60);
+}
+
+function closeAddModal() {
+  document.getElementById('add-modal').style.display = 'none';
+}
+
+// Close modal with Escape key
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeAddModal();
+});
+
+function confirmAddItem() {
+  const navn = document.getElementById('modal-navn').value.trim();
+  if (!navn) {
+    const el = document.getElementById('modal-navn');
+    el.classList.add('invalid');
+    el.focus();
+    return;
+  }
+  const pris = parseInt(document.getElementById('modal-pris').value) || 0;
+  const besk = document.getElementById('modal-besk').value.trim();
+  const img  = document.getElementById('modal-img').value.trim();
+
+  collectCurrentTab();
+  if (!menuData[activeTab]) menuData[activeTab] = [];
+
+  const newItem = { navn, pris, beskrivelse: besk, img: img || 'images/no-image.png' };
+  if (document.getElementById('modal-ny').checked)        newItem.ny        = true;
+  if (document.getElementById('modal-populaer').checked)  newItem.populaer  = true;
+  if (document.getElementById('modal-anbefalet').checked) newItem.anbefalet = true;
+  if (activeTab === 'LimitedEdition')                     newItem.limitedEdition = true;
+
+  menuData[activeTab].push(newItem);
+  closeAddModal();
+  buildTabs();
+  renderEditor(activeTab);
+  setTimeout(() => document.querySelector('#items-editor .item-card:last-child')
+    ?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
+}
+
+function duplicateItem(i) {
+  collectCurrentTab();
+  const orig = menuData[activeTab][i];
+  openAddModal({ ...orig, navn: orig.navn + ' (kopi)' });
+}
+
+// ADD / DELETE
+function addItem() {
+  const navn = document.getElementById('new-navn').value.trim();
+  const pris = parseInt(document.getElementById('new-pris').value) || 0;
+  const besk = document.getElementById('new-besk').value.trim();
+  const img  = document.getElementById('new-img').value.trim();
+
+  if (!navn) { alert('Navn er påkrævet.'); return; }
+
+  collectCurrentTab();
+  if (!menuData[activeTab]) menuData[activeTab] = [];
+
+  const newItem = { navn, pris, beskrivelse: besk, img: img || 'images/no-image.png' };
+  if (document.getElementById('new-ny').checked)        newItem.ny        = true;
+  if (document.getElementById('new-populaer').checked)  newItem.populaer  = true;
+  if (document.getElementById('new-anbefalet').checked) newItem.anbefalet = true;
+  if (activeTab === 'LimitedEdition')                   newItem.limitedEdition = true;
+
+  menuData[activeTab].push(newItem);
+
+  ['new-navn','new-pris','new-besk','new-img'].forEach(id => { document.getElementById(id).value = ''; });
+  ['new-ny','new-populaer','new-anbefalet'].forEach(id => { document.getElementById(id).checked = false; });
+
+  renderEditor(activeTab);
+}
+
+function deleteItem(i) {
+  if (!confirm('Slet "' + (menuData[activeTab][i]?.navn || 'denne vare') + '"?')) return;
+  collectCurrentTab();
+  menuData[activeTab].splice(i, 1);
+  renderEditor(activeTab);
+}
+
+// IMAGE UPLOAD
+function uploadImage(btn, urlInput) {
+  const picker  = document.createElement('input');
+  picker.type   = 'file';
+  picker.accept = 'image/jpeg,image/png,image/webp,image/gif';
+  picker.onchange = async () => {
+    const file = picker.files[0];
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      alert('Billedet er for stort (maks 8 MB).');
+      return;
+    }
+    const dataUrl = await new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = e => res(e.target.result);
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
+    const orig = btn.textContent;
+    btn.disabled = true; btn.textContent = '…';
+    let serverOk = false;
+    try {
+      const r = await fetch('save-menu.php', { credentials: 'same-origin',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'upload', filename: file.name, data: dataUrl })
+      });
+      if (r.ok) {
+        const json = await r.json().catch(() => null);
+        if (json?.success) {
+          urlInput.value = json.path;
+          updateImgPreview(urlInput);
+          serverOk = true;
+        }
+      }
+    } catch(e) { /* no server — fall through */ }
+
+    if (!serverOk) {
+      urlInput.value = dataUrl;
+      updateImgPreview(urlInput);
+      setMsg('📷 Billede gemt lokalt. Husk at downloade menu.json til serveren.', 'ok');
+    }
+
+    btn.disabled = false; btn.textContent = orig;
+  };
+  picker.click();
+}
+
+// DRAG & DROP REORDER
+let _dragIdx = null;
+
+function dragStart(e, i) {
+  _dragIdx = i;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', String(i));
+  setTimeout(() => e.currentTarget.classList.add('dragging'), 0);
+}
+
+function dragEnd(e) {
+  e.currentTarget.draggable = false;
+  e.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.item-card,.group-label').forEach(el => el.classList.remove('drag-over'));
+  _dragIdx = null;
+}
+
+function dragOver(e, i) {
+  if (_dragIdx === null) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  document.querySelectorAll('.item-card,.group-label').forEach(el => el.classList.remove('drag-over'));
+  e.currentTarget.classList.add('drag-over');
+}
+
+function dragDrop(e, i) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (_dragIdx === null || _dragIdx === i) return;
+  collectCurrentTab();
+  const items  = menuData[activeTab];
+  const moved  = items.splice(_dragIdx, 1)[0];
+  const target = _dragIdx < i ? i - 1 : i;
+  items.splice(target, 0, moved);
+  _dragIdx = null;
+  renderEditor(activeTab);
+}
+
+// SAVE MENU TO SERVER
+function saveMenu() {
+  collectCurrentTab();
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true;
+  btn.textContent = 'Gemmer…';
+  setMsg('', '');
+
+  fetch('save-menu.php', { credentials: 'same-origin',
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(menuData)
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.success) {
+      localStorage.setItem('lp_menu', JSON.stringify(menuData));
+      setMsg('✓ Gemt på server!', 'ok');
+    } else {
+      setMsg('Fejl: ' + res.error, 'err');
+    }
+  })
+  .catch(() => {
+    localStorage.setItem('lp_menu', JSON.stringify(menuData));
+    setMsg('✓ Gemt lokalt — download menu.json for at publicere på server.', 'ok');
+  })
+  .finally(() => { btn.disabled = false; btn.textContent = 'Gem ændringer'; });
+}
+
+function setMsg(text, type) {
+  const el = document.getElementById('save-msg');
+  el.textContent = text;
+  el.className   = type;
+}
+
+// CONFIG (hours + coupons)
+function loadConfig() {
+  fetch('config.json?t=' + Date.now())
+    .then(r => r.ok ? r.json() : null).catch(() => null)
+    .then(cfg => {
+      if (!cfg) {
+        const local = localStorage.getItem('lp_config');
+        cfg = local ? JSON.parse(local) : null;
+      }
+      if (!cfg) return;
+      if (cfg.hours) {
+        document.getElementById('h-wd-open').value      = cfg.hours.weekdayOpen  || '16:00';
+        document.getElementById('h-we-open').value      = cfg.hours.weekendOpen  || '15:30';
+        document.getElementById('h-close').value        = cfg.hours.close        || '21:30';
+        document.getElementById('h-online-close').value = cfg.hours.onlineClose  || '20:30';
+      }
+      if (cfg.notice) {
+        document.getElementById('notice-on').checked  = cfg.notice.aktiv  || false;
+        document.getElementById('notice-txt').value   = cfg.notice.besked || '';
+        document.getElementById('notice-fra').value   = cfg.notice.fra    || '';
+        document.getElementById('notice-til').value   = cfg.notice.til    || '';
+      }
+    });
+}
+
+function buildConfig() {
+  return {
+    hours: {
+      weekdayOpen:  document.getElementById('h-wd-open').value      || '16:00',
+      weekendOpen:  document.getElementById('h-we-open').value      || '15:30',
+      close:        document.getElementById('h-close').value        || '21:30',
+      onlineClose:  document.getElementById('h-online-close').value || '20:30'
+    },
+    notice: {
+      aktiv:  document.getElementById('notice-on').checked,
+      besked: document.getElementById('notice-txt').value.trim(),
+      fra:    document.getElementById('notice-fra').value,
+      til:    document.getElementById('notice-til').value
+    }
+  };
+}
+
+function saveConfig() {
+  const config = buildConfig();
+  const btn = document.getElementById('cfg-save-btn');
+  btn.disabled = true;
+  btn.textContent = 'Gemmer…';
+  setCfgMsg('', '');
+
+  fetch('save-config.php', { credentials: 'same-origin',
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(config)
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.success) {
+      setCfgMsg('✓ Indstillinger gemt!', 'ok');
+    } else {
+      setCfgMsg('Fejl: ' + res.error, 'err');
+    }
+  })
+  .catch(() => { setCfgMsg('Fejl: kunne ikke nå serveren.', 'err'); })
+  .finally(() => { btn.disabled = false; btn.textContent = 'Gem indstillinger'; });
+}
+
+function setCfgMsg(text, type) {
+  const el = document.getElementById('cfg-msg');
+  el.textContent = text;
+  el.className   = type;
+}
+
+// NOTICE BANNER
+function saveNotice() {
+  const config = buildConfig();
+  const msg = document.getElementById('notice-msg');
+
+  fetch('save-config.php', { credentials: 'same-origin',
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(config)
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.success) {
+      sessionStorage.removeItem('lp_notice_afvist');
+      msg.textContent = '✓ Besked gemt og publiceret!';
+    } else {
+      msg.textContent = 'Fejl: ' + res.error;
+    }
+    msg.style.display = 'block';
+    setTimeout(() => { msg.style.display = 'none'; }, 2500);
+  })
+  .catch(() => {
+    msg.textContent = 'Fejl: kunne ikke nå serveren.';
+    msg.style.display = 'block';
+    setTimeout(() => { msg.style.display = 'none'; }, 2500);
+  });
+}
+
+function addNewCategory() {
+  const nameEl  = document.getElementById('new-cat-navn');
+  const emojiEl = document.getElementById('new-cat-emoji');
+  const msg     = document.getElementById('new-cat-msg');
+  const name    = nameEl.value.trim();
+  const emoji   = emojiEl.value.trim() || '🍽️';
+
+  if (!name) { msg.style.color = '#c00'; msg.textContent = 'Skriv et navn'; return; }
+  if (CATEGORIES.includes(name)) { msg.style.color = '#c00'; msg.textContent = 'Kategorien findes allerede'; return; }
+
+  CATEGORIES.push(name);
+  CAT_EMOJI[name] = emoji;
+  if (!menuData[name]) menuData[name] = [];
+
+  nameEl.value  = '';
+  emojiEl.value = '';
+  msg.style.color = '#1a7a1a';
+  msg.textContent = `✓ "${name}" tilføjet — husk at gem ændringer`;
+  setTimeout(() => { msg.textContent = ''; }, 4000);
+
+  switchTab(name);
+}
+
+async function changePassword() {
+  const current = document.getElementById('pw-current').value;
+  const newPw   = document.getElementById('pw-new').value;
+  const confirm = document.getElementById('pw-confirm').value;
+  const msg     = document.getElementById('pw-msg');
+
+  if (!current || !newPw || !confirm) { msg.style.color='#c00'; msg.textContent = 'Udfyld alle felter'; return; }
+  if (newPw !== confirm) { msg.style.color='#c00'; msg.textContent = 'Kodeordene matcher ikke'; return; }
+  if (newPw.length < 6)  { msg.style.color='#c00'; msg.textContent = 'Kodeord skal være mindst 6 tegn'; return; }
+
+  try {
+    const r = await fetch('change-password.php', { credentials: 'same-origin',
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ current, new: newPw })
+    });
+    const res = await r.json();
+    if (res.success) {
+      msg.style.color = '#1a7a1a';
+      msg.textContent = '✓ Kodeord ændret!';
+      document.getElementById('pw-current').value = '';
+      document.getElementById('pw-new').value = '';
+      document.getElementById('pw-confirm').value = '';
+    } else {
+      msg.style.color = '#c00';
+      msg.textContent = res.error || 'Fejl';
+    }
+  } catch (e) {
+    msg.style.color = '#c00';
+    msg.textContent = 'Fejl: kunne ikke nå serveren';
+  }
+  setTimeout(() => { msg.textContent = ''; }, 4000);
+}
+
+function loadNotice() {
+  fetch('config.json?t=' + Date.now())
+    .then(r => r.ok ? r.json() : null).catch(() => null)
+    .then(cfg => {
+      if (!cfg || !cfg.notice) return;
+      document.getElementById('notice-on').checked = cfg.notice.aktiv || false;
+      document.getElementById('notice-txt').value  = cfg.notice.besked    || '';
+      document.getElementById('notice-fra').value  = cfg.notice.fra       || '';
+      document.getElementById('notice-til').value  = cfg.notice.til       || '';
+    });
+}
+
+// DOWNLOAD MENU.JSON
+function downloadMenuJson() {
+  collectCurrentTab();
+  const blob = new Blob([JSON.stringify(menuData, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'menu.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+</script>
+
+</body>
+</html>

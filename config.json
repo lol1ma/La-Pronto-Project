@@ -1,0 +1,14 @@
+{
+  "hours": {
+    "weekdayOpen": "16:00",
+    "weekendOpen": "15:30",
+    "close": "21:30",
+    "onlineClose": "20:30"
+  },
+  "notice": {
+    "aktiv": false,
+    "besked": "",
+    "fra": "",
+    "til": ""
+  }
+}

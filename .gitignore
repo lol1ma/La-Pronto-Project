@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Local dev server (contains credentials)
+server.js
+
+# Sensitive config — create locally, never commit
+.env
+admin-pass.json
+
+# Order data
+order-count.json
+
+# Backup files
+*.backup.json
+menu.backup.json
+
+# Runtime logs (contain customer data)
+mail-debug.txt
+*.log
+
+# Test files
+mail-test.php
+check-log.php

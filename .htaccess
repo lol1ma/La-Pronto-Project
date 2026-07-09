@@ -1,0 +1,36 @@
+Options -Indexes
+DirectoryIndex index.html index.php
+
+# HTTPS REDIRECT
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# HSTS
+Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+# SECURITY HEADERS
+Header always set X-Frame-Options "SAMEORIGIN"
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-XSS-Protection "1; mode=block"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.quickpay.net; frame-src https://payment.quickpay.net;"
+
+# BLOCK SENSITIVE FILES
+<FilesMatch "\.(bak|backup|sql|log|txt|sh|env|git)$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "^\.DS_Store$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "^server\.js$">
+    Require all denied
+</FilesMatch>
+
+# BLOCK DIRECT PHP ACCESS
+RewriteCond %{REQUEST_FILENAME} \.php$
+RewriteCond %{REQUEST_URI} !/(save-menu|save-config|auth|logout|quickpay-create|lp-order|quickpay-callback|send-order|upload|order-counter|change-password)\.php$
+RewriteRule ^ - [F,L]
