@@ -8,12 +8,12 @@ A complete digital ordering solution for La Pronto Pizza in Aalborg Øst, Denmar
 
 - Online menu loaded from JSON with search and category filtering
 - Shopping cart with product options and multiple sizes
-- Secure payment flow with QuickPay
+- Payment flow with QuickPay integration
 - Automatic email confirmations for both customer and restaurant
 - Admin panel for managing menu items, prices, opening hours, scheduled closures and discount codes
 - Delivery zone calculation using the Nominatim Geocoding API
 - Danish and English language support
-- Responsive design for desktop, tablet and mobile (iOS & Android)
+- Responsive design for desktop, tablet and mobile
 
 ## Tech Stack
 
@@ -26,9 +26,9 @@ A complete digital ordering solution for La Pronto Pizza in Aalborg Øst, Denmar
 - SMTP
 - one.com hosting
 
-## Running the project
+## Setup
 
-Clone the repository and replace the placeholder credentials with your own:
+Replace placeholder credentials with your own:
 
 - `send-order.php` → SMTP credentials
 - `auth.php` → Admin password
@@ -37,4 +37,4 @@ Clone the repository and replace the placeholder credentials with your own:
 
 ## Portfolio note
 
-This repository is intended for portfolio purposes. All sensitive information, including API keys, passwords and email credentials, has been replaced with placeholder values before publishing.
+This repository is for portfolio purposes. API keys, passwords and email credentials have been replaced with placeholders before publishing.
